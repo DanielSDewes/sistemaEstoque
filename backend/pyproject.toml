@@ -1,0 +1,41 @@
+[project]
+name = "sistema-estoque-backend"
+version = "1.0.0"
+description = "Sistema de Gestao de Estoque - Backend API"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "W", "C4"]
+ignore = [
+    "B008",   # FastAPI Depends() in defaults is idiomatic
+    "UP042",  # `str, Enum` is intentional (StrEnum changes str()/serialization)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Dense demo seed data and long test assertions are readable as-is.
+"app/db/sample_data.py" = ["E501"]
+"tests/**" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.mypy]
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+warn_unused_ignores = false
+disallow_untyped_defs = false
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/alembic/*", "tests/*"]
