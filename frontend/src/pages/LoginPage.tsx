@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { apiErrorMessage } from '@/api/client';
@@ -30,6 +30,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState<string | null>(null);
+  const resetOk = (location.state as { resetOk?: boolean } | null)?.resetOk;
 
   const {
     register,
@@ -78,6 +79,11 @@ export default function LoginPage() {
             </Typography>
           </Stack>
 
+          {resetOk && !error && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Senha redefinida com sucesso. Entre com a nova senha.
+            </Alert>
+          )}
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
@@ -108,6 +114,18 @@ export default function LoginPage() {
                 {isSubmitting ? 'Entrando...' : 'Entrar'}
               </Button>
             </Stack>
+          </Box>
+
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Typography
+              component={RouterLink}
+              to="/forgot-password"
+              variant="body2"
+              color="primary"
+              sx={{ textDecoration: 'none' }}
+            >
+              Esqueci minha senha
+            </Typography>
           </Box>
 
           <Typography

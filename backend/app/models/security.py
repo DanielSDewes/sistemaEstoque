@@ -1,4 +1,4 @@
-"""Security-related models: JWT revocation denylist."""
+"""Security-related models: JWT revocation denylist and password resets."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -25,5 +25,31 @@ class RevokedToken(Base):
         DateTime(timezone=True), nullable=False, index=True
     )
     revoked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class PasswordResetToken(Base):
+    """A single-use, short-lived password reset token.
+
+    Only the SHA-256 hash of the token is stored; the plaintext lives only in
+    the reset link sent to the user. A token is valid until it expires or is
+    used, whichever comes first.
+    """
+
+    __tablename__ = "password_reset_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    token_hash: Mapped[str] = mapped_column(
+        String(64), unique=True, index=True, nullable=False
+    )
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, index=True
+    )
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

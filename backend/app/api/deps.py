@@ -1,5 +1,6 @@
 """Shared FastAPI dependencies: auth, current user, permission guards, context."""
 from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
@@ -8,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.exceptions import AuthenticationError, PermissionDeniedError
+from app.core.net import client_ip
 from app.core.pagination import PageParams
 from app.core.security import decode_token
 from app.models.user import User
@@ -38,17 +40,28 @@ def get_current_user(
     user = UserRepository(db).get(int(payload["sub"]))
     if not user or not user.is_active:
         raise AuthenticationError("Usuario invalido ou inativo")
+    # Tokens issued before the last password change are no longer valid (a
+    # 1s leeway absorbs the JWT `iat` truncation to whole seconds).
+    if user.password_changed_at is not None:
+        iat = payload.get("iat")
+        if iat is not None:
+            issued_at = datetime.fromtimestamp(int(iat), tz=UTC)
+            changed = user.password_changed_at
+            if changed.tzinfo is None:
+                changed = changed.replace(tzinfo=UTC)
+            if issued_at + timedelta(seconds=1) < changed:
+                raise AuthenticationError(
+                    "Sessao encerrada apos alteracao de senha. Faca login novamente."
+                )
     return user
 
 
 def get_request_context(
     request: Request, user: User = Depends(get_current_user)
 ) -> RequestContext:
-    client_ip = request.client.host if request.client else None
-    forwarded = request.headers.get("x-forwarded-for")
     return RequestContext(
         user=user,
-        ip_address=forwarded.split(",")[0].strip() if forwarded else client_ip,
+        ip_address=client_ip(request),
         user_agent=request.headers.get("user-agent"),
     )
 

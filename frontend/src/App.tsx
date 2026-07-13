@@ -16,6 +16,7 @@ import FinancialCategoriesPage from '@/pages/finance/FinancialCategoriesPage';
 import SimpleNameCrud from '@/pages/finance/SimpleNameCrud';
 import InventoryPage from '@/pages/InventoryPage';
 import LocationsPage from '@/pages/LocationsPage';
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
 import LoginPage from '@/pages/LoginPage';
 import MovementsPage from '@/pages/MovementsPage';
 import NotFoundPage from '@/pages/NotFoundPage';
@@ -24,6 +25,7 @@ import ProductsPage from '@/pages/ProductsPage';
 import ProfilePage from '@/pages/ProfilePage';
 import ProfitReportPage from '@/pages/ProfitReportPage';
 import ReportsPage from '@/pages/ReportsPage';
+import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import RolesPage from '@/pages/RolesPage';
 import SuppliersPage from '@/pages/SuppliersPage';
 import UsersPage from '@/pages/UsersPage';
@@ -32,6 +34,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route
         element={
           <ProtectedRoute>

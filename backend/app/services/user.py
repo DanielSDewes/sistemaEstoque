@@ -75,9 +75,13 @@ class UserService:
         return UserRead.model_validate(user)
 
     def change_password(self, user: User, data: PasswordChange) -> None:
+        from datetime import UTC, datetime
+
         if not verify_password(data.current_password, user.hashed_password):
             raise ValidationAppError("Senha atual incorreta")
         user.hashed_password = hash_password(data.new_password)
+        # Invalidate access tokens issued before this change (other sessions).
+        user.password_changed_at = datetime.now(UTC)
         self.db.flush()
         self.audit.log(AuditAction.UPDATE, entity="User", entity_id=user.id, field="password")
         self.db.commit()

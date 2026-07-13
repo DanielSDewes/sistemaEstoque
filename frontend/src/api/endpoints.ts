@@ -51,6 +51,10 @@ export const authApi = {
   logout: async (): Promise<void> => {
     await api.post('/auth/logout');
   },
+  forgotPassword: async (email: string): Promise<{ detail: string; reset_token: string | null }> =>
+    (await api.post('/auth/forgot-password', { email })).data,
+  resetPassword: async (token: string, new_password: string): Promise<{ detail: string }> =>
+    (await api.post('/auth/reset-password', { token, new_password })).data,
 };
 
 // --- Catalog CRUD resources ---

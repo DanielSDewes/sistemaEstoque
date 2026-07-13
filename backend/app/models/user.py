@@ -71,6 +71,9 @@ class User(Base, TimestampMixin):
         Integer, default=0, server_default="0", nullable=False
     )
     locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Set whenever the password changes; access tokens issued before this
+    # instant are rejected, terminating all other sessions.
+    password_changed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), nullable=False, index=True)
     role: Mapped[Role] = relationship(back_populates="users", lazy="selectin")
