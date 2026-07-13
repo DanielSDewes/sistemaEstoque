@@ -12,6 +12,7 @@ from app.api.v1 import (
     movements,
     orders,
     products,
+    purchase,
     reports,
     stock_items,
     users,
@@ -33,6 +34,7 @@ api_router.include_router(dashboard.router)
 api_router.include_router(alerts.router)
 api_router.include_router(customers.router)
 api_router.include_router(orders.router)
+api_router.include_router(purchase.router)
 api_router.include_router(finance.router)
 api_router.include_router(products.router)
 api_router.include_router(stock_items.router)

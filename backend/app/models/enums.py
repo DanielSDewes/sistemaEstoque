@@ -51,6 +51,14 @@ class OrderStatus(str, enum.Enum):
     CANCELLED = "cancelado"
 
 
+class PurchaseOrderStatus(str, enum.Enum):
+    DRAFT = "rascunho"        # being edited, no stock effect yet
+    PLACED = "emitido"        # sent to supplier, awaiting delivery
+    PARTIAL = "parcial"       # some items received
+    RECEIVED = "recebido"     # all items received (stock entries generated)
+    CANCELLED = "cancelado"
+
+
 class FinancialDirection(str, enum.Enum):
     RECEIVABLE = "receber"
     PAYABLE = "pagar"

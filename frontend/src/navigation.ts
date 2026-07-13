@@ -21,6 +21,7 @@ import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import SavingsIcon from '@mui/icons-material/Savings';
 import SellIcon from '@mui/icons-material/Sell';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -74,6 +75,13 @@ export const NAV_ITEMS: NavEntry[] = [
     icon: PointOfSaleIcon,
     children: [
       { label: 'Pedidos', path: '/pedidos', icon: ReceiptLongIcon, permission: 'order:view' },
+    ],
+  },
+  {
+    label: 'Compras',
+    icon: ShoppingCartIcon,
+    children: [
+      { label: 'Pedidos de Compra', path: '/compras', icon: ShoppingCartIcon, permission: 'purchase:view' },
     ],
   },
   {

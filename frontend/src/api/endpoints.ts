@@ -31,6 +31,8 @@ import type {
   ProductLocationLink,
   ProductSupplierLink,
   ProfitReport,
+  PurchaseOrder,
+  PurchaseOrderStatus,
   Role,
   Shelf,
   SuggestedCharges,
@@ -251,6 +253,52 @@ export const ordersApi = {
   },
   profitReport: async (params: ProfitReportParams = {}): Promise<ProfitReport> =>
     (await api.get<ProfitReport>('/orders/reports/profit', { params })).data,
+};
+
+// --- Purchase orders (Compras) ---
+export interface PurchaseItemPayload {
+  product_id: number;
+  quantity: number;
+  unit_cost: number;
+}
+
+export interface PurchaseOrderPayload {
+  supplier_id: number;
+  order_date?: string | null;
+  expected_date?: string | null;
+  notes?: string | null;
+  extra_cost?: number;
+  items: PurchaseItemPayload[];
+}
+
+export interface ReceiveItemPayload {
+  item_id: number;
+  quantity: number;
+}
+
+export interface PurchaseListParams extends ListParams {
+  supplier_id?: number;
+  status?: PurchaseOrderStatus;
+}
+
+export const purchaseOrdersApi = {
+  list: async (params: PurchaseListParams = {}): Promise<Page<PurchaseOrder>> =>
+    (await api.get<Page<PurchaseOrder>>('/purchase-orders', { params })).data,
+  get: async (id: number): Promise<PurchaseOrder> =>
+    (await api.get<PurchaseOrder>(`/purchase-orders/${id}`)).data,
+  create: async (payload: PurchaseOrderPayload): Promise<PurchaseOrder> =>
+    (await api.post<PurchaseOrder>('/purchase-orders', payload)).data,
+  update: async (id: number, payload: Partial<PurchaseOrderPayload>): Promise<PurchaseOrder> =>
+    (await api.put<PurchaseOrder>(`/purchase-orders/${id}`, payload)).data,
+  place: async (id: number): Promise<PurchaseOrder> =>
+    (await api.post<PurchaseOrder>(`/purchase-orders/${id}/place`)).data,
+  receive: async (id: number, items?: ReceiveItemPayload[]): Promise<PurchaseOrder> =>
+    (await api.post<PurchaseOrder>(`/purchase-orders/${id}/receive`, { items: items ?? null })).data,
+  cancel: async (id: number, reason: string): Promise<PurchaseOrder> =>
+    (await api.post<PurchaseOrder>(`/purchase-orders/${id}/cancel`, { reason })).data,
+  remove: async (id: number): Promise<void> => {
+    await api.delete(`/purchase-orders/${id}`);
+  },
 };
 
 // --- Finance: accounts, installments, settlements, reports ---

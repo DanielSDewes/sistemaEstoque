@@ -259,6 +259,42 @@ export interface Order {
   cancelled_at: string | null;
 }
 
+export type PurchaseOrderStatus =
+  | 'rascunho'
+  | 'emitido'
+  | 'parcial'
+  | 'recebido'
+  | 'cancelado';
+
+export interface PurchaseOrderItem {
+  id: number;
+  product_id: number;
+  product_name: string;
+  product_code: string;
+  quantity: number;
+  unit_cost: number;
+  received_quantity: number;
+  pending_quantity: number;
+  line_total: number;
+}
+
+export interface PurchaseOrder {
+  id: number;
+  number: string | null;
+  supplier_id: number;
+  supplier_name: string;
+  status: PurchaseOrderStatus;
+  order_date: string;
+  expected_date: string | null;
+  notes: string | null;
+  total_amount: number;
+  extra_cost: number;
+  items: PurchaseOrderItem[];
+  placed_at: string | null;
+  received_at: string | null;
+  cancelled_at: string | null;
+}
+
 export interface ProfitPeriod {
   period: string;
   orders: number;

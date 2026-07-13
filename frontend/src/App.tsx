@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/auth/ProtectedRoute';
 import AlertsPage from '@/pages/AlertsPage';
 import AuditPage from '@/pages/AuditPage';
 import CategoriesPage from '@/pages/CategoriesPage';
+import ComprasPage from '@/pages/ComprasPage';
 import CustomersPage from '@/pages/CustomersPage';
 import DashboardPage from '@/pages/DashboardPage';
 import AccountsPage from '@/pages/finance/AccountsPage';
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="/fornecedores" element={<SuppliersPage />} />
         <Route path="/clientes" element={<CustomersPage />} />
         <Route path="/pedidos" element={<OrdersPage />} />
+        <Route path="/compras" element={<ComprasPage />} />
         <Route path="/financeiro/receber" element={<AccountsPage direction="receber" />} />
         <Route path="/financeiro/pagar" element={<AccountsPage direction="pagar" />} />
         <Route path="/financeiro/fluxo" element={<CashFlowPage />} />

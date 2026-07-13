@@ -13,6 +13,7 @@ _CRUD_RESOURCES = [
     "supplier",
     "customer",
     "order",
+    "purchase",
     "finance",
     "user",
     "role",
@@ -26,6 +27,9 @@ _SPECIAL = {
     "inventory:approve": "Aprovar inventarios",
     "order:confirm": "Confirmar pedidos (baixa estoque)",
     "order:cancel": "Cancelar pedidos (estorna estoque)",
+    "purchase:place": "Emitir pedidos de compra",
+    "purchase:receive": "Receber pedidos de compra (entrada em estoque)",
+    "purchase:cancel": "Cancelar pedidos de compra",
     "finance:settle": "Registrar baixas (pagar/receber)",
     "finance:cancel": "Cancelar contas financeiras",
     "audit:view": "Visualizar auditoria",
@@ -61,13 +65,16 @@ ADMIN = set(all_permissions().keys())
 SUPERVISOR = (
     _crud(
         "product", "category", "group", "subgroup", "brand", "corridor", "shelf",
-        "supplier", "customer", "order", "finance",
+        "supplier", "customer", "order", "purchase", "finance",
     )
     | {
         "movement:create",
         "movement:cancel",
         "order:confirm",
         "order:cancel",
+        "purchase:place",
+        "purchase:receive",
+        "purchase:cancel",
         "finance:settle",
         "finance:cancel",
         "inventory:create",
@@ -98,6 +105,11 @@ OPERATOR = {
     "order:create",
     "order:update",
     "order:confirm",
+    "purchase:view",
+    "purchase:create",
+    "purchase:update",
+    "purchase:place",
+    "purchase:receive",
     "finance:view",
     "finance:settle",
     "movement:create",
@@ -110,7 +122,7 @@ READ_ONLY = {
     f"{r}:view"
     for r in [
         "product", "category", "group", "subgroup", "brand", "corridor", "shelf",
-        "supplier", "customer", "order", "finance",
+        "supplier", "customer", "order", "purchase", "finance",
     ]
 } | {"dashboard:view", "report:view"}
 

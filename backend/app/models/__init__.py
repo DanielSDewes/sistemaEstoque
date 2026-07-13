@@ -26,7 +26,8 @@ from app.models.location import Corridor, ProductLocation, Shelf  # noqa: F401
 from app.models.movement import StockMovement  # noqa: F401
 from app.models.order import Order, OrderItem  # noqa: F401
 from app.models.product import Batch, Product  # noqa: F401
-from app.models.security import RevokedToken  # noqa: F401
+from app.models.purchase import PurchaseOrder, PurchaseOrderItem  # noqa: F401
+from app.models.security import PasswordResetToken, RevokedToken  # noqa: F401
 from app.models.supplier import (  # noqa: F401
     ProductSupplier,
     Supplier,
@@ -60,6 +61,8 @@ __all__ = [
     "OrderItem",
     "Product",
     "Batch",
+    "PurchaseOrder",
+    "PurchaseOrderItem",
     "Supplier",
     "ProductSupplier",
     "SupplierPriceHistory",
@@ -68,4 +71,5 @@ __all__ = [
     "Permission",
     "role_permissions",
     "RevokedToken",
+    "PasswordResetToken",
 ]
