@@ -2,10 +2,24 @@
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.models.security import RevokedToken
+
+
+def purge_expired(db: Session) -> int:
+    """Delete denylist rows whose tokens have already expired.
+
+    Expired JWTs are rejected by signature/``exp`` validation before the
+    denylist is ever consulted, so their rows are dead weight. Returns the
+    number of rows removed. Safe to call periodically (startup / cron).
+    """
+    result = db.execute(
+        delete(RevokedToken).where(RevokedToken.expires_at < datetime.now(UTC))
+    )
+    db.commit()
+    return result.rowcount or 0
 
 
 def is_revoked(db: Session, jti: str | None) -> bool:

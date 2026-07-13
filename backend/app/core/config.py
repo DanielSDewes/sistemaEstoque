@@ -49,10 +49,35 @@ class Settings(BaseSettings):
     LOGIN_RATE_LIMIT_MAX: int = 10  # requests per window per IP+user
     LOGIN_RATE_LIMIT_WINDOW_SECONDS: int = 60
     PASSWORD_MIN_LENGTH: int = 8
+    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = 30
+
+    # --- Reverse proxy / client IP resolution ---
+    # Only trust X-Forwarded-For when the app is deployed behind a proxy that
+    # sets it. TRUSTED_PROXY_HOPS is the number of trusted proxies between the
+    # client and the app (used to pick the real client IP from the XFF chain).
+    TRUST_PROXY_HEADERS: bool = False
+    TRUSTED_PROXY_HOPS: int = 1
+
+    # --- Rate limiting backend ---
+    # When set, the login rate limiter uses Redis so the limit is shared across
+    # workers/instances; otherwise it falls back to an in-process window.
+    REDIS_URL: str | None = None
 
     # --- Observability ---
     SENTRY_DSN: str | None = None
     ENABLE_METRICS: bool = True
+    # When set, /metrics requires this token (Bearer header or ?token=). In
+    # production with no token configured, /metrics is hidden entirely.
+    METRICS_TOKEN: str | None = None
+
+    # --- Frontend / e-mail (password reset links) ---
+    FRONTEND_BASE_URL: str = "http://localhost:5173"
+    SMTP_HOST: str | None = None
+    SMTP_PORT: int = 587
+    SMTP_USER: str | None = None
+    SMTP_PASSWORD: str | None = None
+    SMTP_FROM: str = "no-reply@estoque.local"
+    SMTP_TLS: bool = True
 
     # --- Uploads ---
     UPLOAD_DIR: str = "uploads"

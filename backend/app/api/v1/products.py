@@ -7,7 +7,7 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.core.exceptions import ValidationAppError
 from app.core.pagination import Page, PageParams
-from app.core.storage import ALLOWED_IMAGE_TYPES, save_product_photo
+from app.core.storage import ALLOWED_IMAGE_TYPES, save_product_photo, sniff_image_type
 from app.repositories.movement import MovementRepository
 from app.schemas.common import Message
 from app.schemas.movement import MovementRead
@@ -16,6 +16,13 @@ from app.services.audit import RequestContext
 from app.services.product import ProductService
 
 router = APIRouter(prefix="/products", tags=["Produtos"])
+
+
+def _reject_if_too_large(file: UploadFile) -> None:
+    """Reject oversized uploads up front, before buffering the body in memory."""
+    max_bytes = settings.MAX_UPLOAD_MB * 1024 * 1024
+    if file.size is not None and file.size > max_bytes:
+        raise ValidationAppError(f"Arquivo excede {settings.MAX_UPLOAD_MB} MB")
 
 
 @router.get("", response_model=Page[ProductRead], summary="Busca inteligente de produtos")
@@ -116,10 +123,15 @@ async def upload_photo(
 ) -> ProductRead:
     if file.content_type not in ALLOWED_IMAGE_TYPES:
         raise ValidationAppError("Formato de imagem nao suportado (use JPG, PNG, WEBP ou GIF)")
+    _reject_if_too_large(file)
     content = await file.read()
     if len(content) > settings.MAX_UPLOAD_MB * 1024 * 1024:
         raise ValidationAppError(f"Arquivo excede {settings.MAX_UPLOAD_MB} MB")
-    url = save_product_photo(content, file.content_type)
+    # Trust the file's magic bytes, not the client-supplied Content-Type.
+    real_type = sniff_image_type(content)
+    if real_type is None:
+        raise ValidationAppError("Arquivo nao e uma imagem valida (JPG, PNG, WEBP ou GIF)")
+    url = save_product_photo(content, real_type)
     return ProductService(db, ctx).set_photo(product_id, url)
 
 
@@ -132,6 +144,7 @@ async def import_products(
     ctx: RequestContext = Depends(get_request_context),
     _=Depends(require_permission("product:create")),
 ) -> ImportResult:
+    _reject_if_too_large(file)
     content = await file.read()
     if len(content) > settings.MAX_UPLOAD_MB * 1024 * 1024:
         raise ValidationAppError(f"Arquivo excede {settings.MAX_UPLOAD_MB} MB")
